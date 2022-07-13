@@ -2,14 +2,43 @@ MainWidget:
 
 <MainWidget>:
     cols: 3
-    Label:
-        pos_hint: self.width/2, self.height/6
-        size_hint: .2, .3
-        text: root.header_msg
-    Button:
-        size_hint_x: .33
-        size_hint_y: 2
-    Label:
-        pos_hint: self.width/2, self.height/6
-        size_hint: .2, .3
-        text: root.header_msg
+    BoxLayout:
+        size_hint: .1, 1
+
+    StackLayout:
+        pos_hint: {"center_x" : .5, "center_y" : 1}
+        RelativeLayout:
+            Label:
+                id: user_name_label
+                pos_hint: {"center_x" : .5, "center_y" : .85}
+                size_hint: .6, .0525
+                text: "Username"
+                font_size: dp(20)
+            TextInput:
+                id: user_name
+                pos_hint: {"center_x" : .5, "center_y" : .8}
+                size_hint: .6, .055
+                text: root.username_input
+                on_focus: root.clear_username()
+            Label:
+                id: user_password_label
+                pos_hint: {"center_x" : .5, "center_y" : .6}
+                size_hint: .6, .0525
+                text: "Password"
+                font_size: dp(20)
+            TextInput:
+                id: user_password
+                pos_hint: {"center_x" : .5, "center_y" : .55}
+                size_hint: .6, .055
+                text: root.password_input
+                on_focus: root.clear_password()
+                on_text_validate: root.validate_password(self)
+            Button:
+                id: submit
+                pos_hint: {"center_x" : .5, "center_y" : .2}
+                size_hint: .3, .1
+                text: "SUBMIT"
+
+
+    BoxLayout:
+        size_hint: .1, 1
