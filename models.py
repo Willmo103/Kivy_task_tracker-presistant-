@@ -19,17 +19,17 @@ class Task:
 
 
 class DailyTask(Task):
+    daily_task_frequency: int
     def __init__(self, title, **kwargs):
         super().__init__(title, **kwargs)
         self.title = title
-    daily_task_frequency: int
 
 
 class Scheduled(DailyTask):
+    scheduled_days_between: int
     def __init__(self, title, **kwargs):
         super().__init__(title, **kwargs)
         self.title = title
-    scheduled_days_between: int
 
 
 class User:
@@ -38,7 +38,4 @@ class User:
         self.password = password
         self.points = 0
 
-
-t_1 = Scheduled("take a shit", task_compleated=True, scheduled_days_between=3, daily_task_frequency=14)
-print(t_1.scheduled_days_between)
 

@@ -7,34 +7,37 @@ from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 
-sm = ScreenManager()
-
-# Builder.load_file("login.kv")
+# sm = ScreenManager()
 
 
 class MainWidget(GridLayout):
+
+    # ===== local imports of helper functions, models ===== #
     from helpers import read_json, write_json, is_users, init_json
+    from models import Task, User
 
-    login_widget = ObjectProperty()
-
+    # ===== validation string properties ===== #
     username_input = StringProperty("Enter Your Username")
     password_input = StringProperty("Enter Your Password")
     stored_users: list = [dict, {str: any}]
-    state_no_users = True
-    submit_enabled = False
-    header_msg = StringProperty("Test Test")
-    state_valid_user = False
 
+    # ===== States ===== #
+    state_valid_user = False
+    state_no_users = True
+
+    # ===== init =====#
     def __init__(self, **kwargs):
         self.init_json()
         self.new_user_entry()
         super(MainWidget, self).__init__(**kwargs)
 
+
     def clear_username(self):
         self.username_input = ""
 
-    def clear_password(self):
+    def clear_password(self, widget):
         self.password_input = ""
+        widget.password = True
 
     def new_user_entry(self):
         if self.state_no_users:
@@ -55,4 +58,6 @@ class TaskApp(App):
     pass
 
 
-TaskApp().run()
+if __name__ == '__main__':
+    TaskApp().run()
+
