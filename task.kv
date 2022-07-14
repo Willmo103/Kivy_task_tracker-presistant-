@@ -1,44 +1,63 @@
+#:import login_widget login
 MainWidget:
 
 <MainWidget>:
+    login_widget: login_widget
+    canvas.before:
+        Rectangle:
+            size: self.size
+            source: "resources/5039684.jpg"
     cols: 3
+
     BoxLayout:
         size_hint: .1, 1
 
     StackLayout:
         pos_hint: {"center_x" : .5, "center_y" : 1}
+
         RelativeLayout:
+
             Label:
                 id: user_name_label
                 pos_hint: {"center_x" : .5, "center_y" : .85}
                 size_hint: .6, .0525
                 text: "Username"
                 font_size: dp(20)
+
             TextInput:
-                id: user_name
+                id: username
                 pos_hint: {"center_x" : .5, "center_y" : .8}
                 size_hint: .6, .055
                 text: root.username_input
+                multiline: False
                 on_focus: root.clear_username()
+                text_validate_unfocus: False
+                on_text_validate: root.update_username_input(username.text)
+
             Label:
                 id: user_password_label
                 pos_hint: {"center_x" : .5, "center_y" : .6}
                 size_hint: .6, .0525
                 text: "Password"
                 font_size: dp(20)
+
             TextInput:
-                id: user_password
+                id: password
+                focusable: True
                 pos_hint: {"center_x" : .5, "center_y" : .55}
                 size_hint: .6, .055
                 text: root.password_input
                 on_focus: root.clear_password()
-                on_text_validate: root.validate_password(self)
+                multiline: False
+                text_validate_unfocus: False
+                on_text_validate: root.update_password_input(password.text)
+
+
             Button:
                 id: submit
-                pos_hint: {"center_x" : .5, "center_y" : .2}
+                pos_hint: {"center_x" : .5, "center_y" : .25}
                 size_hint: .3, .1
                 text: "SUBMIT"
-
-
+                on_press: root.validate(password.text, username.text)
     BoxLayout:
         size_hint: .1, 1
