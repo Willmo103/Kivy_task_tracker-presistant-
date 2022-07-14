@@ -7,11 +7,8 @@ from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 
-# sm = ScreenManager()
 
-
-class MainWidget(GridLayout):
-
+class LoginScreen(Screen):
     # ===== local imports of helper functions, models ===== #
     from helpers import read_json, write_json, is_users, init_json
     from models import Task, User
@@ -29,8 +26,7 @@ class MainWidget(GridLayout):
     def __init__(self, **kwargs):
         self.init_json()
         self.new_user_entry()
-        super(MainWidget, self).__init__(**kwargs)
-
+        super(Screen, self).__init__(**kwargs)
 
     def clear_username(self):
         self.username_input = ""
@@ -54,10 +50,25 @@ class MainWidget(GridLayout):
                     print(self.state_valid_user)
 
 
+class ListViewScreen(Screen):
+    ...
+
+
+class AddTaskScreen(Screen):
+    ...
+
+    ...
+
+
+class WindowManager(ScreenManager):
+    ...
+
+# kv = Builder.load_file('task.kv')
+
+
 class TaskApp(App):
-    pass
+    ...
 
 
 if __name__ == '__main__':
     TaskApp().run()
-

@@ -1,63 +1,72 @@
-#:import login_widget login
-MainWidget:
+WindowManager:
+    LoginScreen:
+    AddTaskScreen:
+    ListViewScreen:
 
-<MainWidget>:
-    login_widget: login_widget
+<LoginScreen>:
+    name: "login"
     canvas.before:
         Rectangle:
             size: self.size
             source: "resources/5039684.jpg"
-    cols: 3
+    GridLayout:
+        cols: 3
 
-    BoxLayout:
-        size_hint: .1, 1
+        BoxLayout:
+            size_hint: .1, 1
 
-    StackLayout:
-        pos_hint: {"center_x" : .5, "center_y" : 1}
+        StackLayout:
+            pos_hint: {"center_x" : .5, "center_y" : 1}
 
-        RelativeLayout:
+            RelativeLayout:
 
-            Label:
-                id: user_name_label
-                pos_hint: {"center_x" : .5, "center_y" : .85}
-                size_hint: .6, .0525
-                text: "Username"
-                font_size: dp(20)
+                Label:
+                    id: user_name_label
+                    pos_hint: {"center_x" : .5, "center_y" : .85}
+                    size_hint: .6, .0525
+                    text: "Username"
+                    font_size: dp(20)
 
-            TextInput:
-                id: username
-                pos_hint: {"center_x" : .5, "center_y" : .8}
-                size_hint: .6, .055
-                text: root.username_input
-                multiline: False
-                on_focus: root.clear_username()
-                text_validate_unfocus: False
-                on_text_validate: root.username_input = username.text
+                TextInput:
+                    id: username
+                    pos_hint: {"center_x" : .5, "center_y" : .8}
+                    size_hint: .6, .055
+                    text: root.username_input
+                    multiline: False
+                    on_focus: root.clear_username()
+                    text_validate_unfocus: False
+                    on_text_validate: root.username_input = username.text
 
-            Label:
-                id: user_password_label
-                pos_hint: {"center_x" : .5, "center_y" : .6}
-                size_hint: .6, .0525
-                text: "Password"
-                font_size: dp(20)
+                Label:
+                    id: user_password_label
+                    pos_hint: {"center_x" : .5, "center_y" : .6}
+                    size_hint: .6, .0525
+                    text: "Password"
+                    font_size: dp(20)
 
-            TextInput:
-                id: password
-                pos_hint: {"center_x" : .5, "center_y" : .55}
-                size_hint: .6, .055
-                text: root.password_input
-                on_focus: root.clear_password(self)
-                multiline: False
-                text_validate_unfocus: False
-                on_text_validate: root.password_input = password.text
+                TextInput:
+                    id: password
+                    pos_hint: {"center_x" : .5, "center_y" : .55}
+                    size_hint: .6, .055
+                    text: root.password_input
+                    on_focus: root.clear_password(self)
+                    multiline: False
+                    text_validate_unfocus: False
+                    on_text_validate: root.password_input = password.text
 
 
-            Button:
-                id: submit
-                pos_hint: {"center_x" : .5, "center_y" : .25}
-                size_hint: .3, .1
-                text: "SUBMIT"
-                on_press: root.validate(password.text, username.text)
-                disabled: username.text == "Enter your username" and password.text == "Enter your password"
-    BoxLayout:
-        size_hint: .1, 1
+                Button:
+                    id: submit
+                    pos_hint: {"center_x" : .5, "center_y" : .25}
+                    size_hint: .3, .1
+                    text: "SUBMIT"
+                    on_press: root.validate(password.text, username.text)
+                    disabled: username.text == "Enter your username" and password.text == "Enter your password"
+        BoxLayout:
+            size_hint: .1, 1
+
+<AddTaskScreen>:
+    name: "add_task"
+
+<ListViewScreen>:
+    name: "list_view"
