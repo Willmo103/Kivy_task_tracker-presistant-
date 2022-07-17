@@ -60,8 +60,13 @@ WindowManager:
                     pos_hint: {"center_x" : .5, "center_y" : .25}
                     size_hint: .3, .1
                     text: "SUBMIT"
-                    on_press: root.validate(password.text, username.text)
-                    disabled: username.text == "Enter your username" and password.text == "Enter your password"
+                    on_press:
+                        root.validate(password.text, username.text)
+                        root.manager.transition.direction = 'down'
+                        if root.state_valid_user: root.manager.current = "list_view"
+                        root.manager.screen("list_view").current_user = root.current_user
+
+
         BoxLayout:
             size_hint: .1, 1
 
@@ -70,3 +75,12 @@ WindowManager:
 
 <ListViewScreen>:
     name: "list_view"
+    canvas.before:
+        Rectangle:
+            size: self.size
+            source: "resources/5039684.jpg"
+    StackLayout:
+        size_hint: 1, .5
+        Button:
+            text: "test"
+            on_press: root.test()

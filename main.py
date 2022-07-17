@@ -1,11 +1,11 @@
 from kivy.app import App
-from kivy.lang import Builder
-from kivy.properties import StringProperty, BooleanProperty, ObjectProperty
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.textinput import TextInput
-from kivy.uix.widget import Widget
-from kivy.uix.relativelayout import RelativeLayout
+from kivy.properties import StringProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
+
+# TODO: figure out how to pass data between screens login -> list
+# TODO: Display invalid password / invalid username if login fails
+# TODO: Disable the submit button if both username and password aren't filled in
+# TODO: Build out the display for the stack layout of the tasks.
 
 
 class LoginScreen(Screen):
@@ -20,7 +20,11 @@ class LoginScreen(Screen):
 
     # ===== States ===== #
     state_valid_user = False
+    state_invalid_user = False
     state_no_users = True
+
+    # ==== props ===== #
+    current_user: dict = None
 
     # ===== init =====#
     def __init__(self, **kwargs):
@@ -47,27 +51,38 @@ class LoginScreen(Screen):
                 current_password = self.stored_users[i].get("password")
                 if str(current_password) == password and current_username == username.lower():
                     self.state_valid_user = True
+                    self.current_user = self.stored_users[i]
                     print(self.state_valid_user)
+                else:
+                    self.state_invalid_user = True
+        else:
+            data = self.read_json()
+            users = data.get("users")
 
 
 class ListViewScreen(Screen):
+    current_user = None
+
+    def test(self):
+        print(self.current_user)
     ...
 
 
 class AddTaskScreen(Screen):
     ...
 
-    ...
-
 
 class WindowManager(ScreenManager):
     ...
 
-# kv = Builder.load_file('task.kv')
-
 
 class TaskApp(App):
-    ...
+    def build(self):
+        sm = WindowManager()
+        sm.add_widget(LoginScreen(name="login"))
+        sm.add_widget(ListViewScreen(name="list_view"))
+        sm.add_widget(AddTaskScreen(name="add_task"))
+        return sm
 
 
 if __name__ == '__main__':
