@@ -72,9 +72,9 @@ class Task:
         }
         return task
 
+
 class DailyTask(Task):
     daily_task_frequency: int
-
     def __init__(self, title, **kwargs):
         super().__init__(title, **kwargs)
         self.title = title
@@ -82,7 +82,6 @@ class DailyTask(Task):
 
 class Scheduled(DailyTask):
     scheduled_days_between: int
-
     def __init__(self, title, **kwargs):
         super().__init__(title, **kwargs)
         self.title = title
@@ -155,13 +154,29 @@ def user_from_dict(data: dict) -> User:
     of the program.
     :param: dict version of a User Class Object
     """
+    tasks: list[Task] = []
+    completed: list[Task] = []
+
+    # call __init__ method on User
     user = User(
         data.get('name'),
         data.get('password')
     )
+
+    # Use Setter to set the points
     user.set_points(data.get("points"))
-    user.set_tasks(data.get("tasks"))
-    user.set_completed_tasks(data.get("completed"))
+
+    # loop though and init tasks from saved tasks
+    dict_tasks: list[dict] = data.get("tasks")
+    for task in dict_tasks:
+        tasks.append(task_from_dict(task))
+    user.set_tasks(tasks)
+
+    # loop though and init tasks from saved completed tasks
+    dict_completed: list[dict] = data.get("completed")
+    for task in dict_completed:
+        completed.append(task_from_dict(task))
+    user.set_completed_tasks(completed)
     return user
 
 
@@ -178,10 +193,9 @@ def task_from_dict(data: dict) -> Task:
             "completed": self.completed
 
     and initiate a new Task class object from the dict
+    :param: data a dict version of a Task Class Object"""
 
-    :param dict version of a Task Class Object"""
-
-    task = Task(
+    task: Task = Task(
         data.get("title"),
         data.get("description"),
         data.get("urgency"),

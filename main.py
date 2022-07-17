@@ -2,6 +2,12 @@ from kivy.app import App
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 
+# Additional Imports
+from models import User, Task
+
+# Global Variables
+VALIDATED_USER = None
+
 # TODO: figure out how to pass data between screens login -> list
 # TODO: Display invalid password / invalid username if login fails
 # TODO: Disable the submit button if both username and password aren't filled in
@@ -11,7 +17,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 class LoginScreen(Screen):
     # ===== local imports of helper functions, models ===== #
     from helpers import read_json, write_json, is_users, init_json
-    from models import Task, User
+
 
     # ===== validation string properties ===== #
     username_input = StringProperty("Enter Your Username")
@@ -55,9 +61,10 @@ class LoginScreen(Screen):
                     print(self.state_valid_user)
                 else:
                     self.state_invalid_user = True
-        else:
+        elif self.state_no_users:
             data = self.read_json()
             users = data.get("users")
+            users.append(User(username, password))
 
 
 class ListViewScreen(Screen):

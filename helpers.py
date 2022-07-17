@@ -59,8 +59,7 @@ def init_json(self):
         data = read_json()
         users = data.get("users")
         for user in users:
-            name = user.get("username")
-            password = user.get("password")
+            user = from_dict
             self.stored_users.append({"username": name, "password": password})
         # print(self.stored_users)
 
