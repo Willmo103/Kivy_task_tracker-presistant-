@@ -5,6 +5,7 @@ WindowManager:
 
 <LoginScreen>:
     name: "login"
+    on_pre_leave: root.manager.update_current_user(root.current_user)
     canvas.before:
         Rectangle:
             size: self.size
@@ -19,20 +20,35 @@ WindowManager:
             pos_hint: {"center_x" : .5, "center_y" : 1}
 
             RelativeLayout:
-
+                Label:
+                    id: header
+                    pos_hint: {"center_x": .5, "center_y": .9}
+                    size_hint: .6, .1
+                    font_size: dp(40)
+                    text: root.header_text
                 Label:
                     id: user_name_label
-                    pos_hint: {"center_x" : .5, "center_y" : .85}
+                    pos_hint: {"center_x" : .5, "center_y" : .75}
                     size_hint: .6, .0525
                     text: "Username"
                     font_size: dp(20)
 
+                Label:
+                    id: invalid_name_label
+                    pos_hint: {"center_x" : .75, "center_y" : .75}
+                    size_hint: .6, .0525
+                    text: "Invalid Entry!"
+                    color: "red"
+                    opacity: 0
+                    font_size: dp(20)
+
                 TextInput:
                     id: username
-                    pos_hint: {"center_x" : .5, "center_y" : .8}
+                    pos_hint: {"center_x" : .5, "center_y" : .7}
                     size_hint: .6, .055
                     text: root.username_input
                     multiline: False
+                    write_tab: False
                     on_focus: root.clear_username()
                     text_validate_unfocus: False
                     on_text_validate: root.username_input = username.text
@@ -44,12 +60,22 @@ WindowManager:
                     text: "Password"
                     font_size: dp(20)
 
+                Label:
+                    id: invalid_password_label
+                    pos_hint: {"center_x" : .75, "center_y" : .6}
+                    size_hint: .6, .0525
+                    opacity: 0
+                    text: "Invalid Entry!"
+                    color: "red"
+                    font_size: dp(20)
+
                 TextInput:
                     id: password
                     pos_hint: {"center_x" : .5, "center_y" : .55}
                     size_hint: .6, .055
                     text: root.password_input
                     on_focus: root.clear_password(self)
+                    write_tab: False
                     multiline: False
                     text_validate_unfocus: False
                     on_text_validate: root.password_input = password.text
@@ -57,15 +83,25 @@ WindowManager:
 
                 Button:
                     id: submit
-                    pos_hint: {"center_x" : .5, "center_y" : .25}
+                    pos_hint: {"center_x" : .5, "center_y" : .3}
                     size_hint: .3, .1
                     text: "SUBMIT"
                     on_press:
                         root.validate(password.text, username.text)
                         root.manager.transition.direction = 'down'
                         if root.state_valid_user: root.manager.current = "list_view"
-                        root.manager.screen("list_view").current_user = root.current_user
-
+                        invalid_name_label.opacity = 0
+                        invalid_password_label.opacity = 0
+                        if root.state_invalid_username: invalid_name_label.opacity = 1
+                        if root.state_invalid_password: invalid_password_label.opacity = 1
+                Button:
+                    id: new_user
+                    pos_hint: {"center_x" : .5, "center_y" : .18}
+                    size_hint: .3, .1
+                    text: "New User"
+                    on_press:
+                        root.state_no_users = True
+                        root.new_user_entry()
 
         BoxLayout:
             size_hint: .1, 1
@@ -75,12 +111,12 @@ WindowManager:
 
 <ListViewScreen>:
     name: "list_view"
+    on_enter: root.current_user = root.manager.current_user
     canvas.before:
         Rectangle:
             size: self.size
             source: "resources/5039684.jpg"
+    RelativeLayout:
+        Label:
     StackLayout:
-        size_hint: 1, .5
-        Button:
-            text: "test"
-            on_press: root.test()
+

@@ -1,4 +1,25 @@
-{"users": [{"username":  "will",
-"password":  "12345"},{"username":  "ill",
-"password":  "23456"},{"username":  "bill",
-"password":  "34567"}]}
+{
+  "users": [
+    {
+      "name": "will",
+      "password": "12345",
+      "points": 0,
+      "tasks": [],
+      "completed": []
+    },
+    {
+      "name": "ill",
+      "password": "23456",
+      "points": 0,
+      "tasks": [],
+      "completed": []
+    },
+    {
+      "name": "bill",
+      "password": "34567",
+      "points": 0,
+      "tasks": [],
+      "completed": []
+    }
+  ]
+}

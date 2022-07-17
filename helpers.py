@@ -1,6 +1,8 @@
 import json
 import os
 
+from models import user_from_dict
+
 
 def read_json() -> dict:
     with open("data/user_info.json", "r") as f:
@@ -59,8 +61,9 @@ def init_json(self):
         data = read_json()
         users = data.get("users")
         for user in users:
-            user = from_dict
-            self.stored_users.append({"username": name, "password": password})
+            user = user_from_dict(user)
+            self.stored_users.append(user)
+            # print(user.to_dict())
         # print(self.stored_users)
 
 

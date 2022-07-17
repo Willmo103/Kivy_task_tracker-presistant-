@@ -1,14 +1,14 @@
 from kivy.app import App
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 # Additional Imports
-from models import User, Task
+from models import User
 
 # Global Variables
 VALIDATED_USER = None
 
-# TODO: figure out how to pass data between screens login -> list
+
 # TODO: Display invalid password / invalid username if login fails
 # TODO: Disable the submit button if both username and password aren't filled in
 # TODO: Build out the display for the stack layout of the tasks.
@@ -22,15 +22,17 @@ class LoginScreen(Screen):
     # ===== validation string properties ===== #
     username_input = StringProperty("Enter Your Username")
     password_input = StringProperty("Enter Your Password")
-    stored_users: list = [dict, {str: any}]
+    header_text = StringProperty("U S E R   L O G I N")
+    stored_users: list[User] = []
 
     # ===== States ===== #
     state_valid_user = False
-    state_invalid_user = False
+    state_invalid_username = False
+    state_invalid_password = False
     state_no_users = True
 
     # ==== props ===== #
-    current_user: dict = None
+    current_user: User = None
 
     # ===== init =====#
     def __init__(self, **kwargs):
@@ -49,29 +51,37 @@ class LoginScreen(Screen):
         if self.state_no_users:
             self.username_input = "Enter your new username"
             self.password_input = "Enter your new password"
+            self.header_text = "N E W   U S E R"
 
     def validate(self, password, username):
         if not self.state_no_users:
-            for i in range(2, len(self.stored_users)):
-                current_username = self.stored_users[i].get("username").lower()
-                current_password = self.stored_users[i].get("password")
-                if str(current_password) == password and current_username == username.lower():
+            for i in range(0, len(self.stored_users)):
+                current_username = self.stored_users[i].get_username()
+                current_password = self.stored_users[i].get_password()
+                if str(current_password) == password and current_username.lower() == username.lower():
                     self.state_valid_user = True
                     self.current_user = self.stored_users[i]
-                    print(self.state_valid_user)
-                else:
-                    self.state_invalid_user = True
-        elif self.state_no_users:
+                elif str(current_password) == password or current_username.lower() == username.lower():
+                    if str(current_password) != password:
+                        self.state_invalid_password = True
+                    else:
+                        self.state_invalid_password = False
+                    if str(current_username).lower() != username.lower():
+                        self.state_invalid_username = True
+                    else:
+                        self.state_invalid_username = False
+        elif self.state_no_users and username != '' and password != "":
             data = self.read_json()
             users = data.get("users")
             users.append(User(username, password))
+            self.state_valid_user = True
 
 
 class ListViewScreen(Screen):
     current_user = None
 
     def test(self):
-        print(self.current_user)
+        print(self.current_user.to_dict())
     ...
 
 
@@ -80,6 +90,9 @@ class AddTaskScreen(Screen):
 
 
 class WindowManager(ScreenManager):
+    current_user: User = None
+    def update_current_user(self, user: User):
+        self.current_user = user
     ...
 
 

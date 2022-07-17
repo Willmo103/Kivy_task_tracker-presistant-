@@ -88,13 +88,12 @@ class Scheduled(DailyTask):
 
 
 class User:
-    tasks = []
-    points = 0
-    completed_tasks = []
-
     def __init__(self, name: str, password: str):
         self.name = name
         self.password = password
+        self.tasks = []
+        self.points = 0
+        self.completed_tasks = []
 
     def set_username(self, username: str):
         self.name = username
@@ -158,7 +157,7 @@ def user_from_dict(data: dict) -> User:
     completed: list[Task] = []
 
     # call __init__ method on User
-    user = User(
+    user: User = User(
         data.get('name'),
         data.get('password')
     )
