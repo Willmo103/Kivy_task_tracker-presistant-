@@ -4,17 +4,16 @@ from datetime import datetime
 class Task:
     def __init__(self, title: str,
                  description: str = "",
-                 urgency: int = None,
+                 urgency: str = "low",
                  is_due: bool = False,
-                 due_date: datetime = None,
+                 due_date: any = None,
                  point_value: int = 0,
                  completed=False, **kwargs):
         self.title = title
         self.description = description
         self.urgency = urgency
         self.is_due = is_due
-        if self.is_due:
-            self.due_date = due_date
+        self.due_date = due_date
         self.point_value = point_value
         self.completed = completed
 
@@ -199,8 +198,15 @@ def task_from_dict(data: dict) -> Task:
         data.get("description"),
         data.get("urgency"),
         data.get("is_due"),
-        data.get("due_data"),
+        data.get("due_date"),
         data.get("points"),
         data.get("completed")
     )
     return task
+
+# generate some test tasks to add to my json file manually
+# tasks = []
+# for i in range(0, 10):
+#     test = Task(f"test{i}")
+#     tasks.append(test.to_dict())
+# print(tasks)
