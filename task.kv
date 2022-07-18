@@ -15,13 +15,10 @@ WindowManager:
             source: "resources/images/5039684.jpg"
     GridLayout:
         cols: 3
-
         BoxLayout:
             size_hint: .05, 1
-
         StackLayout:
             pos_hint: {"center_x" : .5, "center_y" : 1}
-
             RelativeLayout:
                 Label:
                     id: Title
@@ -54,7 +51,6 @@ WindowManager:
                     text: "Username"
                     font_name: "resources/fonts/Prototype.ttf"
                     font_size: dp(20)
-
                 Label:
                     id: invalid_name_label
                     pos_hint: {"center_x" : .75, "center_y" : .6}
@@ -64,7 +60,6 @@ WindowManager:
                     opacity: 0
                     font_name: "resources/fonts/Prototype.ttf"
                     font_size: dp(20)
-
                 TextInput:
                     id: username
                     pos_hint: {"center_x" : .5, "center_y" : .55}
@@ -75,7 +70,6 @@ WindowManager:
                     on_focus: root.clear_username()
                     text_validate_unfocus: False
                     on_text_validate: root.username_input = username.text
-
                 Label:
                     id: user_password_label
                     pos_hint: {"center_x" : .25, "center_y" : .425}
@@ -83,7 +77,6 @@ WindowManager:
                     text: "Password"
                     font_name: "resources/fonts/Prototype.ttf"
                     font_size: dp(20)
-
                 Label:
                     id: invalid_password_label
                     pos_hint: {"center_x" : .75, "center_y" : .425}
@@ -93,7 +86,6 @@ WindowManager:
                     color: "red"
                     font_name: "resources/fonts/Prototype.ttf"
                     font_size: dp(20)
-
                 TextInput:
                     id: password
                     pos_hint: {"center_x" : .5, "center_y" : .375}
@@ -104,8 +96,6 @@ WindowManager:
                     multiline: False
                     text_validate_unfocus: False
                     on_text_validate: root.password_input = password.text
-
-
                 Button:
                     id: submit
                     pos_hint: {"center_x" : .35, "center_y" : .125}
@@ -130,12 +120,10 @@ WindowManager:
                         submit.text: "Add User"
                         root.state_no_users = True
                         root.new_user_entry()
-
         BoxLayout:
             size_hint: .05, 1
 
-<AddTaskScreen>:
-    name: "add_task"
+
 
 <ListViewScreen>:
     name: "list_view"
@@ -144,39 +132,114 @@ WindowManager:
     on_enter:
         root.current_user = root.manager.current_user
         root.init_user_tasks()
+#    on_leave:
+#        root.clear_user_tasks()
     canvas.before:
         Rectangle:
             size: self.size
             source: "resources/images/5039684.jpg"
 
+
+
 <ViewTaskScreen>:
     on_pre_enter:
         root.selected_task = root.manager.pass_selected_task()
+        root.current_user = root.manager.pass_current_user()
     on_enter:
         root.generate_text()
     on_leave:
         root.selected_task = None
-        root.task_text = ""
+
     name: "view_task"
     canvas.before:
         Rectangle:
             size: self.size
             source: "resources/images/5039684.jpg"
     RelativeLayout:
-        Label:
-            pos_hint: {"center_x" : .5, "center_y" : .425}
-            size_hint: 1, .9
-            text: root.task_text
+        Button:
+            pos_hint: {"center_x" : .5, "center_y" : .8}
+            disabled: True
+            size_hint: .9, .15
+            text: root.task_title
+            background_normal: ""
+            background_disabled_normal: self.background_normal
+            font_size: dp(40)
+            background_color: hex("#296ead")
+            color: hex("#fdea08")
+        Button:
+            pos_hint: {"center_x" : .5, "center_y" : .65}
+            disabled: True
+            size_hint: .9, .15
+            text: root.task_description
+            background_normal: ""
+            background_disabled_normal: self.background_normal
+            font_size: dp(15)
+            background_color: hex("#296ead")
+            color: hex("#fdea08")
+        Button:
+            pos_hint: {"center_x" : .275, "center_y" : .5}
+            disabled: True
+            size_hint: .45, .15
+            text: root.task_urgency
+            background_normal: ""
+            background_disabled_normal: self.background_normal
+            font_size: dp(15)
+            background_color: hex("#296ead")
+            color: hex("#fdea08")
+        Button:
+            pos_hint: {"center_x" : .725, "center_y" : .5}
+            disabled: True
+            size_hint: .45, .15
+            text: root.task_points
+            background_normal: ""
+            background_disabled_normal: self.background_normal
+            font_size: dp(15)
+            background_color: hex("#296ead")
+            color: hex("#fdea08")
+        Button:
+            pos_hint: {"center_x" : .275, "center_y" : .35}
+            disabled: True
+            size_hint: .45, .15
+            text: root.task_due_date
+            background_normal: ""
+            background_disabled_normal: self.background_normal
+            font_size: dp(15)
+            background_color: hex("#296ead")
+            color: hex("#fdea08")
+        Button:
+            pos_hint: {"center_x" : .725, "center_y" : .35}
+            disabled: True
+            size_hint: .45, .15
+            text: root.task_points
+            background_normal: ""
+            background_disabled_normal: self.background_normal
+            font_size: dp(15)
+            background_color: hex("#296ead")
+            color: hex("#fdea08")
         Button:
             id: back
-            pos_hint: {"center_x" : .5, "center_y" : .15}
-            size_hint: .4, .1
+            pos_hint: {"center_x" : .75, "center_y" : .1}
+            size_hint: .30, .1
             background_normal: ""
             background_color: hex("#296ead")
             text: "Back"
             on_press:
                 root.manager.current = "list_view"
                 root.manager.transition.direction = "down"
+        Button:
+            id: Complete
+            pos_hint: {"center_x" : .25, "center_y" : .1}
+            size_hint: .30, .1
+            background_normal: ""
+            background_color: hex("#296ead")
+            text: "Complete Task"
+            on_press:
+                root.complete_current_task()
+
+
+<AddTaskScreen>:
+    name: "add_task"
+
 
 
 <TaskButton>:

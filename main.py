@@ -1,5 +1,3 @@
-from abc import ABC
-
 from kivy.config import Config
 
 # Portrait display
@@ -10,34 +8,27 @@ Config.set('graphics', 'height', '854')
 # Config.set('graphics', 'width', '854')
 # Config.set('graphics', 'height', '480')
 
+# Module Imports
 from kivy.utils import get_color_from_hex
-from kivy.graphics import RoundedRectangle, Color
 from kivy.metrics import dp
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.stacklayout import StackLayout
-
-from kivymd.uix.screen import MDScreen
-
 from kivy.app import App
-from kivy.properties import StringProperty, NumericProperty
+from kivy.properties import StringProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 # Additional Imports
-from models import User, Task
-from helpers import read_json, write_json, is_users, init_json
+from models import User, Task, TaskData, UserData, read_json, write_json
 
 # Global Variables
 VALIDATED_USER = None
 
 
-# TODO: Build out the display for the stack layout of the tasks.
-
-
 class LoginScreen(Screen):
     # ===== local imports of helper functions, models ===== #
-    from helpers import init_json
+    from models import init_json
 
     # ===== validation string properties ===== #
     username_input = StringProperty("Enter Your Username")
@@ -111,12 +102,10 @@ class LoginScreen(Screen):
             self.current_user = new_user
 
 
-class ListViewScreen(Screen):
+class ListViewScreen(Screen, UserData, TaskData):
     state_user_tasks_generated = False
-    current_user: User = None
     tasks: list[Task] = None
     completed: list[Task] = None
-    selected_task = None
 
     task_label: str = StringProperty("")
     task_buttons: list[Button] = []
@@ -214,7 +203,6 @@ class ListViewScreen(Screen):
             print("No tasks to display")
         self.state_user_tasks_generated = True
 
-
     def open_task_window(self, text):
         selected_task: Task
         for task in self.tasks:
@@ -225,6 +213,9 @@ class ListViewScreen(Screen):
                 continue
         self.selected_task = selected_task
 
+    def clear_user_tasks(self):
+        ...
+
 
 class TaskButton(Button):
     ...
@@ -234,38 +225,32 @@ class AddTaskScreen(Screen):
     ...
 
 
-class ViewTaskScreen(Screen):
-    selected_task: Task = None
-    task_text = StringProperty("")
+class ViewTaskScreen(Screen, TaskData):
+    task_title = StringProperty("")
+    task_description = StringProperty("")
+    task_urgency = StringProperty("")
+    task_is_due = StringProperty("")
+    task_due_date = StringProperty("")
+    task_points = StringProperty("")
 
     def generate_text(self):
-        print(self.selected_task)
-        # text = self.selected_task.to_dict()
-        # self.task_text = text
+        self.task_title = f"{self.selected_task.get_title()}"
+        self.task_description = f"Description:\n{self.selected_task.get_description()} "
+        self.task_urgency = f"Priority: {self.selected_task.get_urgency()}"
+        self.task_points = f"Point Available: {self.selected_task.get_point_value()}"
+        self.task_is_due = f"Due? {self.selected_task.get_is_due()}"
+        if self.selected_task.get_due_date():
+            self.task_due_date = f"Due Date: {self.selected_task.get_due_date()}"
+        else:
+            self.task_is_due = "Due Date: Anytime"
 
-    def update_selected_task(self, task: Task):
-        self.selected_task = task
+    def complete_current_task(self):
+        self.selected_task.set_completed()
+        self.current_user.complete_task(self.selected_task)
+        self.current_user.save()
 
-    def clear_selected_task(self):
-        self.selected_task = None
 
-
-class WindowManager(ScreenManager):
-    current_user: User = None
-    selected_task: Task = None
-
-    def update_current_user(self, user: User):
-        self.current_user = user
-
-    def update_selected_task(self, task: Task):
-        self.selected_task = task
-
-    def pass_selected_task(self):
-        return self.selected_task
-
-    def clear_selected_task(self):
-        self.selected_task = None
-
+class WindowManager(ScreenManager, TaskData, UserData):
     ...
 
 

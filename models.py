@@ -1,4 +1,8 @@
+import json
+import os
 from datetime import datetime
+
+
 
 
 class Task:
@@ -56,8 +60,8 @@ class Task:
     def get_completed(self):
         return self.completed
 
-    def set_completed(self, completed):
-        self.completed = completed
+    def set_completed(self):
+        self.completed = True
 
     def to_dict(self) -> dict:
         task = {
@@ -72,27 +76,14 @@ class Task:
         return task
 
 
-class DailyTask(Task):
-    daily_task_frequency: int
-    def __init__(self, title, *args):
-        super().__init__(title, *args)
-        self.title = title
-
-
-class Scheduled(DailyTask):
-    scheduled_days_between: int
-    def __init__(self, title, *args):
-        super().__init__(title, *args)
-        self.title = title
-
-
 class User:
+
     def __init__(self, name: str, password: str):
         self.name = name
         self.password = password
-        self.tasks = []
+        self.tasks: list[Task] = []
         self.points = 0
-        self.completed_tasks = []
+        self.completed_tasks: list[Task] = []
 
     def set_username(self, username: str):
         self.name = username
@@ -135,14 +126,34 @@ class User:
         self.completed_tasks.append(self.tasks.pop(self.tasks.index(task)))
 
     def to_dict(self) -> dict:
+        tasks = []
+        completed = []
+        for task in self.tasks:
+            tasks.append(task.to_dict())
+        for completed_task in self.completed_tasks:
+            completed.append(completed_task.to_dict())
         data = {
             "name": self.name,
             "password": self.password,
             "points": self.points,
-            "tasks": self.tasks,
-            "completed": self.completed_tasks
+            "tasks": tasks,
+            "completed": completed
         }
         return data
+
+    def save(self):
+        previous_version: dict
+        current_version = self.to_dict()
+        json_data = read_json()
+        users: list[dict] = json_data.get("users")
+        for user in users:
+            if user.get("name") == self.name and user.get("password") == self.password:
+                previous_version_index = users.index(user)
+                break
+        users.pop(previous_version_index)
+        users.append(current_version)
+        json_data['users'] = users
+        write_json(json_data)
 
 
 def user_from_dict(data: dict) -> User:
@@ -204,9 +215,96 @@ def task_from_dict(data: dict) -> Task:
     )
     return task
 
-# generate some test tasks to add to my json file manually
-# tasks = []
-# for i in range(0, 10):
-#     test = Task(f"test{i}")
-#     tasks.append(test.to_dict())
-# print(tasks)
+
+class TaskData:
+    selected_task = None
+
+    def update_selected_task(self, task: Task):
+        self.selected_task = task
+
+    def pass_selected_task(self):
+        return self.selected_task
+
+    def clear_selected_task(self):
+        self.selected_task = None
+
+
+class UserData:
+    current_user: User = None
+
+    def update_current_user(self, user: User):
+        self.current_user = user
+
+    def pass_current_user(self) -> User:
+        return self.current_user
+
+    def clear_current_user(self):
+        self.current_user = None
+
+
+# from models import user_from_dict
+
+
+def read_json() -> dict:
+    with open("data/user_info.json", "r") as f:
+        data: dict = json.load(f)
+        return data
+
+
+def write_json(data: dict):
+    with open("data/user_info.json", "w") as f:
+        json.dump(data, f)
+
+
+def is_users() -> bool:
+    data: dict = read_json()
+    users: list = data.get('users')
+    if len(users) == 0:
+        return False
+    else:
+        return True
+
+
+def init_json(self):
+    """
+    This is the initialization process for the startup of a new
+    installation of this application. it will setup the json database and
+    structure to allow for multiple users on the same device. the structure will be:
+    { users: [{
+        "username": "username",
+        "password": "password",
+        "user_tasks": [
+            {task1}, {task2}, {task3},
+            ],
+        "user_daily_tasks": [
+            {task1}, {task2}, {task3},
+            ],
+        "user_tasks_completed": [
+            {task1}, {task2}, {task3},
+            ],
+        "user_points": points,
+        }, etc...]
+    """
+    try:
+        read_json()
+    except FileNotFoundError:
+        if not os.path.exists("data"):
+            os.mkdir("data")
+        json_structure = {
+            "users": []
+        }
+        write_json(json_structure)
+    users = read_json()
+    if len(users.get('users')) == 0:
+        self.state_no_users = True
+    else:
+        self.state_no_users = False
+        data = read_json()
+        users = data.get("users")
+        for user in users:
+            user = user_from_dict(user)
+            self.stored_users.append(user)
+            # print(user.to_dict())
+        # print(self.stored_users)
+
+
