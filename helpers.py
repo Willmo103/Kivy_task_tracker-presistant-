@@ -15,7 +15,7 @@ def write_json(data: dict):
         json.dump(data, f)
 
 
-def is_users():
+def is_users() -> bool:
     data: dict = read_json()
     users: list = data.get('users')
     if len(users) == 0:

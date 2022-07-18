@@ -75,15 +75,15 @@ class Task:
 
 class DailyTask(Task):
     daily_task_frequency: int
-    def __init__(self, title, **kwargs):
-        super().__init__(title, **kwargs)
+    def __init__(self, title, *args):
+        super().__init__(title, *args)
         self.title = title
 
 
 class Scheduled(DailyTask):
     scheduled_days_between: int
-    def __init__(self, title, **kwargs):
-        super().__init__(title, **kwargs)
+    def __init__(self, title, *args):
+        super().__init__(title, *args)
         self.title = title
 
 

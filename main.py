@@ -1,28 +1,36 @@
+from kivy.config import Config
+
+# Portrait display
+Config.set('graphics', 'width', '480')
+Config.set('graphics', 'height', '854')
+
+# landscape display
+# Config.set('graphics', 'width', '854')
+# Config.set('graphics', 'height', '480')
+
 from kivy.app import App
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 # Additional Imports
-from models import User
-
+from models import User, Task
+from helpers import read_json, write_json, is_users, init_json
 # Global Variables
 VALIDATED_USER = None
 
 
-# TODO: Display invalid password / invalid username if login fails
-# TODO: Disable the submit button if both username and password aren't filled in
 # TODO: Build out the display for the stack layout of the tasks.
 
 
 class LoginScreen(Screen):
     # ===== local imports of helper functions, models ===== #
-    from helpers import read_json, write_json, is_users, init_json
+    from helpers import init_json
 
 
     # ===== validation string properties ===== #
     username_input = StringProperty("Enter Your Username")
     password_input = StringProperty("Enter Your Password")
-    header_text = StringProperty("U S E R   L O G I N")
+    header_text = StringProperty("User Login")
     stored_users: list[User] = []
 
     # ===== States ===== #
@@ -51,16 +59,24 @@ class LoginScreen(Screen):
         if self.state_no_users:
             self.username_input = "Enter your new username"
             self.password_input = "Enter your new password"
-            self.header_text = "N E W   U S E R"
+            self.header_text = "New User"
 
     def validate(self, password, username):
+        self.state_invalid_password = False
+        self.state_invalid_username = False
         if not self.state_no_users:
+            if username == "" or username == "Enter Your Username":
+                self.state_invalid_username = True
+            elif password == "" or password == "Enter Your Password":
+                self.state_invalid_password = True
+                return
             for i in range(0, len(self.stored_users)):
                 current_username = self.stored_users[i].get_username()
                 current_password = self.stored_users[i].get_password()
                 if str(current_password) == password and current_username.lower() == username.lower():
                     self.state_valid_user = True
                     self.current_user = self.stored_users[i]
+                    return
                 elif str(current_password) == password or current_username.lower() == username.lower():
                     if str(current_password) != password:
                         self.state_invalid_password = True
@@ -70,15 +86,36 @@ class LoginScreen(Screen):
                         self.state_invalid_username = True
                     else:
                         self.state_invalid_username = False
-        elif self.state_no_users and username != '' and password != "":
-            data = self.read_json()
+        elif self.state_no_users and username != "" or username != "Enter Your Username" and \
+                password != "" or password != "Enter Your Password":
+
+            data = read_json()
             users = data.get("users")
-            users.append(User(username, password))
+            new_user = User(username, password)
+            users.append(new_user.to_dict())
+            data.update({"users": users})
+            write_json(data)
             self.state_valid_user = True
+            self.current_user = new_user
 
 
 class ListViewScreen(Screen):
-    current_user = None
+    current_user: User = None
+    tasks: list[Task] = None
+    completed: list[Task] = None
+    no_task_label: str = StringProperty("")
+
+    def init_user_tasks(self):
+        self.tasks = self.current_user.get_tasks()
+        self.completed = self.current_user.get_completed_tasks()
+
+        if self.tasks:
+            for task in self.tasks:
+                print(task.to_dict())
+        else:
+            self.no_task_label = "No tasks to display"
+            print("No tasks to display")
+
 
     def test(self):
         print(self.current_user.to_dict())
